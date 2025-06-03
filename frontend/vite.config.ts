@@ -9,11 +9,17 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: path.resolve(__dirname, 'index.html'),
+      external: [
+        '/src/main.tsx'
+      ]
+    }
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-    },
+    }
   },
   server: {
     port: 3000,
