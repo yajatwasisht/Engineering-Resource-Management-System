@@ -192,7 +192,7 @@ const Signup: React.FC = () => {
                         className="form-checkbox h-4 w-4 text-primary-600"
                         {...register('skills', { 
                           required: 'Please select at least one skill',
-                          validate: (value) => value && value.length > 0 || 'Please select at least one skill'
+                          validate: (value: string[]) => value && value.length > 0 || 'Please select at least one skill'
                         })}
                       />
                       <span className="ml-2 text-sm text-gray-700">{skill}</span>
