@@ -11,6 +11,6 @@
     "test": "cd backend && npm test && cd ../frontend && npm test"
   },
   "devDependencies": {
-    "concurrently": "^8.0.1"
+    "concurrently": "^8.2.2"
   }
 }
