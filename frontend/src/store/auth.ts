@@ -33,7 +33,7 @@ interface AuthState {
   logout: () => void;
 }
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL || 'https://engineering-resource-management-system.onrender.com';
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
