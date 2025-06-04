@@ -1,12 +1,12 @@
 import express from 'express';
-import { auth, requireRole } from '../middleware/auth';
+import { auth, AuthRequest, requireRole } from '../middleware/auth';
 import Project from '../models/Project';
 import { getProjectUtilization } from '../utils/resourceUtils';
 
 const router = express.Router();
 
 // GET /api/projects
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, async (req: AuthRequest, res) => {
   try {
     const query: any = {};
     
@@ -42,7 +42,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // POST /api/projects
-router.post('/', auth, requireRole(['manager']), async (req, res) => {
+router.post('/', auth, requireRole(['manager']), async (req: AuthRequest, res) => {
   try {
     const projectData = {
       ...req.body,

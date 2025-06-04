@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User';
+import {Error} from 'mongoose';
+import bcrypt from 'bcryptjs';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -66,14 +67,13 @@ export const register = async (req: Request, res: Response) => {
       user: user.toJSON()
     });
   } catch (error) {
-    console.error('Register error:', error);
-    if (error.name === 'ValidationError') {
+    if (error instanceof Error.ValidationError && error.name === 'ValidationError') {
       return res.status(400).json({ 
         message: 'Validation error', 
         errors: Object.keys(error.errors).reduce((acc, key) => {
           acc[key] = error.errors[key].message;
           return acc;
-        }, {})
+        }, {} as Record<string, string>)
       });
     }
     res.status(500).json({ message: 'Error registering user' });

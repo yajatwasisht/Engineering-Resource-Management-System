@@ -21,7 +21,7 @@ const seedDatabase = async () => {
     // Create manager
     const manager = await User.create({
       email: 'manager@example.com',
-      password: await bcrypt.hash('password123', 10),
+      password: 'password123',
       name: 'John Manager',
       role: 'manager',
       department: 'Engineering',
@@ -33,7 +33,7 @@ const seedDatabase = async () => {
     const engineers = await User.create([
       {
         email: 'sarah@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Sarah Smith',
         role: 'engineer',
         department: 'Engineering',
@@ -45,7 +45,7 @@ const seedDatabase = async () => {
       },
       {
         email: 'mike@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Mike Johnson',
         role: 'engineer',
         department: 'Engineering',
@@ -57,7 +57,7 @@ const seedDatabase = async () => {
       },
       {
         email: 'alex@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Alex Chen',
         role: 'engineer',
         department: 'Engineering',
@@ -69,7 +69,7 @@ const seedDatabase = async () => {
       },
       {
         email: 'lisa@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Lisa Brown',
         role: 'engineer',
         department: 'Engineering',

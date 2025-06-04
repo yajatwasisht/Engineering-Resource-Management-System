@@ -37,7 +37,7 @@ export async function getAvailableCapacity(
       0
     );
 
-    return engineer.maxCapacity - totalAllocated;
+    return engineer?.maxCapacity - totalAllocated;
   } catch (error) {
     console.error('Error calculating available capacity:', error);
     throw error;
@@ -112,7 +112,7 @@ export async function canAssignEngineer(
 
     // Check skill match
     const hasRequiredSkills = project.requiredSkills.some(skill =>
-      engineer.skills.includes(skill)
+      (engineer.skills ?? []).includes(skill)
     );
 
     if (!hasRequiredSkills) {

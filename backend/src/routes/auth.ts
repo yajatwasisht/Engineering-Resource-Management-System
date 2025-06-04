@@ -1,8 +1,8 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import { auth } from '../middleware/auth';
+import { auth, AuthRequest } from '../middleware/auth';
 import User from '../models/User';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
@@ -13,6 +13,7 @@ router.post('/login', async (req, res) => {
     
     // Find user by email
     const user = await User.findOne({ email });
+    console.log("user 1: ", JSON.stringify(user))
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -37,7 +38,7 @@ router.post('/login', async (req, res) => {
 });
 
 // GET /api/auth/profile
-router.get('/profile', auth, async (req, res) => {
+router.get('/profile', auth, async (req: AuthRequest, res) => {
   try {
     const user = await User.findById(req.user?._id)
       .select('-password');

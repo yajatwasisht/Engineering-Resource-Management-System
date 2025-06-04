@@ -1,12 +1,12 @@
 import express from 'express';
-import { auth, requireRole } from '../middleware/auth';
+import { auth, AuthRequest, requireRole } from '../middleware/auth';
 import Assignment from '../models/Assignment';
 import { canAssignEngineer } from '../utils/resourceUtils';
 
 const router = express.Router();
 
 // GET /api/assignments
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, async (req: AuthRequest, res) => {
   try {
     const query: any = {};
 

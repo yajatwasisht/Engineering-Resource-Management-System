@@ -1,6 +1,6 @@
 import express, { RequestHandler } from 'express';
 import mongoose from 'mongoose';
-import { authenticateToken, AuthRequest } from '../middleware/auth';
+import { auth } from '../middleware/auth';
 import { analyzeSkillGaps, getTeamSkillDistribution, getRecommendedEngineers } from '../utils/skillAnalysis';
 
 const router = express.Router();
@@ -39,8 +39,8 @@ const getRecommendedEngineersForProject: RequestHandler = async (req, res) => {
   }
 };
 
-router.get('/skill-gaps', authenticateToken, getSkillGapAnalysis);
-router.get('/team-skills', authenticateToken, getTeamSkills);
-router.get('/recommended-engineers/:projectId', authenticateToken, getRecommendedEngineersForProject);
+router.get('/skill-gaps', auth, getSkillGapAnalysis);
+router.get('/team-skills', auth, getTeamSkills);
+router.get('/recommended-engineers/:projectId', auth, getRecommendedEngineersForProject);
 
 export default router; 

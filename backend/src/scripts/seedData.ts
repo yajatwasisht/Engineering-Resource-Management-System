@@ -26,7 +26,7 @@ async function seedData() {
     // Create manager
     const manager = await User.create({
       email: 'manager@example.com',
-      password: await bcrypt.hash('password123', 10),
+      password: 'password123',
       name: 'John Manager',
       role: 'manager',
       department: 'Engineering',
@@ -37,7 +37,7 @@ async function seedData() {
     const engineers = await User.create([
       {
         email: 'sarah@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Sarah Chen',
         role: 'engineer',
         department: 'Engineering',
@@ -48,7 +48,7 @@ async function seedData() {
       },
       {
         email: 'mike@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Mike Johnson',
         role: 'engineer',
         department: 'Data Science',
@@ -59,7 +59,7 @@ async function seedData() {
       },
       {
         email: 'alex@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Alex Rodriguez',
         role: 'engineer',
         department: 'Engineering',
@@ -70,7 +70,7 @@ async function seedData() {
       },
       {
         email: 'lisa@example.com',
-        password: await bcrypt.hash('password123', 10),
+        password: 'password123',
         name: 'Lisa Wong',
         role: 'engineer',
         department: 'DevOps',

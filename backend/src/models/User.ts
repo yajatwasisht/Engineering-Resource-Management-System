@@ -9,7 +9,7 @@ export interface IUser extends Document {
   skills?: string[];
   seniority?: 'junior' | 'mid' | 'senior';
   employmentType: 'full-time' | 'part-time';
-  maxCapacity?: number;
+  maxCapacity: number;
   currentAllocation: number;
   department: string;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -65,7 +65,7 @@ const UserSchema = new Schema<IUser>({
     required: function(this: IUser) {
       return this.role === 'engineer';
     },
-    default: undefined
+    default: 100
   },
   department: {
     type: String,

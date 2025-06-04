@@ -93,7 +93,7 @@ function App() {
         <Route
           path="/"
           element={
-            <Navigate to={user?.role === 'engineer' ? '/engineer/dashboard' : '/manager/dashboard'} />
+            <Navigate to={user?.role === 'engineer' ? '/engineer/dashboard' : '/login'} />
           }
         />
         <Route
