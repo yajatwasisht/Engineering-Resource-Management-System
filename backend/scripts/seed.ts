@@ -7,7 +7,7 @@ import Assignment from '../src/models/Assignment';
 const seedDatabase = async () => {
   try {
     // Connect to MongoDB
-    await mongoose.connect('mongodb://localhost:27017/engineer-management');
+    await mongoose.connect('mongodb+srv://yajatwasisht2309:23092001yW@cluster0.wvv2vfu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
     console.log('Connected to MongoDB...');
 
     // Clear existing data

@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/enginnn';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://yajatwasisht2309:23092001yW@cluster0.wvv2vfu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 async function seedData() {
   try {
