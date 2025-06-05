@@ -2,46 +2,46 @@ import React, { useEffect, useState } from 'react';
 import { Project } from '../types';
 import { projectService } from '../api/services';
 
-// Sample project data (with managerId added)
+// Sample project data
 const sampleProjects: Project[] = [
   {
     _id: 'proj1',
-    name: 'Customer Portal Revamp',
-    description: 'Redesigning and improving the user experience of the customer portal.',
-    startDate: '2025-01-15T00:00:00Z',
-    endDate: '2025-06-15T00:00:00Z',
-    requiredSkills: ['React', 'TypeScript', 'UI/UX'],
-    teamSize: 6,
+    name: 'Project Apollo',
+    description: 'Develop a new cloud infrastructure platform.',
+    startDate: '2024-01-10',
+    endDate: '2024-12-31',
+    requiredSkills: ['AWS', 'Docker', 'Kubernetes'],
+    teamSize: 5,
     status: 'active',
-    currentTeamSize: 4,
-    totalAllocation: 75,
-    managerId: 'mgr1',
+    currentTeamSize: 3,
+    totalAllocation: 60,
+    managerId: 'mgr1'
   },
   {
     _id: 'proj2',
-    name: 'Data Warehouse Migration',
-    description: 'Migrating the existing data warehouse to a new cloud platform.',
-    startDate: '2025-02-01T00:00:00Z',
-    endDate: '2025-05-01T00:00:00Z',
-    requiredSkills: ['SQL', 'ETL', 'Cloud'],
-    teamSize: 5,
+    name: 'Data Insights',
+    description: 'Build a data analytics dashboard.',
+    startDate: '2024-03-01',
+    endDate: '2024-09-30',
+    requiredSkills: ['Python', 'React', 'SQL'],
+    teamSize: 4,
     status: 'planning',
-    currentTeamSize: 2,
-    totalAllocation: 40,
-    managerId: 'mgr2',
+    currentTeamSize: 0,
+    totalAllocation: 0,
+    managerId: 'mgr2'
   },
   {
     _id: 'proj3',
-    name: 'Mobile App Launch',
-    description: 'Building and launching the new mobile app for Android and iOS.',
-    startDate: '2024-12-01T00:00:00Z',
-    endDate: '2025-03-31T00:00:00Z',
-    requiredSkills: ['React Native', 'iOS', 'Android'],
-    teamSize: 7,
+    name: 'Mobile Revamp',
+    description: 'Redesign the mobile app for better UX.',
+    startDate: '2023-07-15',
+    endDate: '2023-12-15',
+    requiredSkills: ['React Native', 'UI/UX'],
+    teamSize: 3,
     status: 'completed',
-    currentTeamSize: 7,
+    currentTeamSize: 3,
     totalAllocation: 100,
-    managerId: 'mgr3',
+    managerId: 'mgr3'
   }
 ];
 
@@ -68,15 +68,12 @@ const Projects: React.FC = () => {
   };
 
   const filteredProjects = projects.filter(project => {
-    const matchesSearch =
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.requiredSkills.some(skill =>
         skill.toLowerCase().includes(searchTerm.toLowerCase())
       );
-
     const matchesStatus = !selectedStatus || project.status === selectedStatus;
-
     return matchesSearch && matchesStatus;
   });
 
@@ -86,7 +83,7 @@ const Projects: React.FC = () => {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
-        <p className="text-gray-600">Manage your projects and teams</p>
+        <p className="text-gray-600">Manage your projects</p>
       </div>
 
       {/* Filters */}
@@ -119,45 +116,50 @@ const Projects: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map(project => (
             <div key={project._id} className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
-              <p className="text-gray-700 mt-2">{project.description}</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
+                  <p className="text-gray-600">{project.description}</p>
+                </div>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    project.status === 'completed' ? 'bg-green-100 text-green-800' :
+                    project.status === 'active' ? 'bg-blue-100 text-blue-800' :
+                    'bg-yellow-100 text-yellow-800'
+                  }`}
+                >
+                  {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                </span>
+              </div>
 
               <div className="mt-4 text-sm text-gray-600">
                 <p>
-                  <strong>Status:</strong> {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                  Duration: {project.startDate} - {project.endDate}
                 </p>
                 <p>
-                  <strong>Duration:</strong>{' '}
-                  {new Date(project.startDate).toLocaleDateString()} - {new Date(project.endDate).toLocaleDateString()}
+                  Team: {project.currentTeamSize} / {project.teamSize}
                 </p>
-                <p>
-                  <strong>Team Size:</strong> {project.currentTeamSize} / {project.teamSize}
-                </p>
-                <p>
-                  <strong>Total Allocation:</strong> {project.totalAllocation}%
-                </p>
-                <p>
-                  <strong>Manager ID:</strong> {project.managerId}
-                </p>
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {project.requiredSkills.map(skill => (
-                  <span
-                    key={skill}
-                    className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
-                  >
-                    {skill}
-                  </span>
-                ))}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {project.requiredSkills.map(skill => (
+                    <span
+                      key={skill}
+                      className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
 
               <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
                 <div
                   className="h-2 rounded-full bg-primary-500"
-                  style={{ width: `${Math.min(project.totalAllocation, 100)}%` }}
+                  style={{ width: `${Math.min(project.totalAllocation ?? 0, 100)}%` }}
                 />
               </div>
+              <p className="mt-1 text-sm text-gray-600">
+                Allocation: {project.totalAllocation ?? 0}% / 100%
+              </p>
             </div>
           ))}
         </div>
