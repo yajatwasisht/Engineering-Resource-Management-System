@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { User } from '../types';
 import { userService } from '../api/services';
 
-// Sample engineer data from seed file
+// Sample engineer data (mock data for now)
 const sampleEngineers: User[] = [
   {
-    _id: 'sample-sarah',
+    _id: 'sample1',
     email: 'sarah@example.com',
     name: 'Sarah Chen',
     role: 'engineer',
@@ -14,10 +14,10 @@ const sampleEngineers: User[] = [
     skills: ['React', 'TypeScript', 'Node.js', 'AWS'],
     employmentType: 'full-time',
     maxCapacity: 100,
-    currentAllocation: 70,
+    currentAllocation: 70
   },
   {
-    _id: 'sample-mike',
+    _id: 'sample2',
     email: 'mike@example.com',
     name: 'Mike Johnson',
     role: 'engineer',
@@ -26,10 +26,10 @@ const sampleEngineers: User[] = [
     skills: ['Python', 'Machine Learning', 'Data Science'],
     employmentType: 'full-time',
     maxCapacity: 100,
-    currentAllocation: 100,
+    currentAllocation: 100
   },
   {
-    _id: 'sample-alex',
+    _id: 'sample3',
     email: 'alex@example.com',
     name: 'Alex Rodriguez',
     role: 'engineer',
@@ -38,10 +38,10 @@ const sampleEngineers: User[] = [
     skills: ['JavaScript', 'React', 'HTML', 'CSS'],
     employmentType: 'part-time',
     maxCapacity: 50,
-    currentAllocation: 40,
+    currentAllocation: 40
   },
   {
-    _id: 'sample-lisa',
+    _id: 'sample4',
     email: 'lisa@example.com',
     name: 'Lisa Wong',
     role: 'engineer',
@@ -50,8 +50,8 @@ const sampleEngineers: User[] = [
     skills: ['Java', 'Spring Boot', 'DevOps', 'Kubernetes'],
     employmentType: 'full-time',
     maxCapacity: 100,
-    currentAllocation: 80,
-  },
+    currentAllocation: 80
+  }
 ];
 
 const Engineers: React.FC = () => {
@@ -67,9 +67,12 @@ const Engineers: React.FC = () => {
   const loadEngineers = async () => {
     try {
       const response = await userService.getAllEngineers();
-      setEngineers(response.data);
+      // Combine fetched engineers with sample engineers
+      setEngineers([...response.data, ...sampleEngineers]);
     } catch (error) {
       console.error('Failed to load engineers:', error);
+      // Still load the sample engineers if the API call fails
+      setEngineers([...sampleEngineers]);
     } finally {
       setLoading(false);
     }
@@ -77,7 +80,10 @@ const Engineers: React.FC = () => {
 
   const filteredEngineers = engineers.filter(engineer => {
     const matchesSearch = engineer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         engineer.email.toLowerCase().includes(searchTerm.toLowerCase());
+      engineer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      engineer.skills?.some(skill =>
+        skill.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     const matchesSkill = !selectedSkill || engineer.skills?.includes(selectedSkill);
     return matchesSearch && matchesSkill;
   });
@@ -91,58 +97,17 @@ const Engineers: React.FC = () => {
         <p className="text-gray-600">Manage your engineering team</p>
       </div>
 
-      {/* Sample Engineers Showcase */}
-      <div className="mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {sampleEngineers.map(engineer => (
-            <div key={engineer._id} className="bg-white rounded-xl shadow-md p-4 hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-bold text-gray-900">{engineer.name}</h3>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  (engineer.currentAllocation || 0) >= (engineer.maxCapacity || 100)
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-green-100 text-green-800'
-                }`}>
-                  {engineer.currentAllocation || 0}% Allocated
-                </span>
-              </div>
-              <p className="text-gray-600 mb-2">{engineer.department} • {engineer.seniority}</p>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {engineer.skills?.map(skill => (
-                  <span
-                    key={skill}
-                    className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full ${
-                    (engineer.currentAllocation || 0) >= (engineer.maxCapacity || 100)
-                      ? 'bg-red-500'
-                      : 'bg-primary-500'
-                  }`}
-                  style={{ width: `${((engineer.currentAllocation || 0) / (engineer.maxCapacity || 100)) * 100}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Filters */}
-      <div className="mb-6 flex gap-4 flex-wrap">
+      <div className="mb-6 flex flex-wrap gap-4">
         <input
           type="text"
-          placeholder="Search engineers..."
-          className="input"
+          placeholder="Search engineers by name, email, or skill..."
+          className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="input"
+          className="border border-gray-300 rounded px-3 py-2 w-full md:w-48"
           value={selectedSkill}
           onChange={(e) => setSelectedSkill(e.target.value)}
         >
@@ -156,6 +121,8 @@ const Engineers: React.FC = () => {
       {/* Engineers Grid */}
       {loading ? (
         <div>Loading...</div>
+      ) : filteredEngineers.length === 0 ? (
+        <div className="text-gray-500">No engineers found.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEngineers.map(engineer => (
@@ -165,11 +132,13 @@ const Engineers: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-900">{engineer.name}</h3>
                   <p className="text-gray-600">{engineer.email}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  (engineer.currentAllocation || 0) >= (engineer.maxCapacity || 100)
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-green-100 text-green-800'
-                }`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    (engineer.currentAllocation || 0) >= (engineer.maxCapacity || 100)
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-green-100 text-green-800'
+                  }`}
+                >
                   {engineer.currentAllocation || 0}% Allocated
                 </span>
               </div>
@@ -198,7 +167,14 @@ const Engineers: React.FC = () => {
                         ? 'bg-red-500'
                         : 'bg-primary-500'
                     }`}
-                    style={{ width: `${((engineer.currentAllocation || 0) / (engineer.maxCapacity || 100)) * 100}%` }}
+                    style={{
+                      width: `${Math.min(
+                        ((engineer.currentAllocation || 0) /
+                          (engineer.maxCapacity || 100)) *
+                          100,
+                        100
+                      )}%`
+                    }}
                   />
                 </div>
                 <p className="mt-1 text-sm text-gray-600">
