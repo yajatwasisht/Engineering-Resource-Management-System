@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigation = [
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Engineers', path: '/manager/engineers' },
-    { name: 'Projects', path: '/projects' },
+    { name: 'Projects', path: '/manager/projects' },
     { name: 'Assignments', path: '/assignments' },
   ];
 
