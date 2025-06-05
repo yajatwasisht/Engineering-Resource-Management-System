@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Project } from '../types';
-import { projectService } from '../api/services';
+
+export interface Project {
+  _id: string;
+  name: string;
+  description: string;
+  startDate: string; // ISO string
+  endDate: string; // ISO string
+  requiredSkills: string[];
+  teamSize: number;
+  status: 'planning' | 'active' | 'completed' | string;
+  currentTeamSize?: number;
+  totalAllocation?: number;
+}
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -8,6 +19,40 @@ const Projects: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
+  // Sample data to test UI rendering
+  useEffect(() => {
+    const sampleData: Project[] = [
+      {
+        _id: '1',
+        name: 'Sample Project 1',
+        description: 'This is a sample project for testing.',
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 86400000 * 30).toISOString(), // 30 days later
+        requiredSkills: ['React', 'TypeScript'],
+        teamSize: 5,
+        status: 'active',
+        currentTeamSize: 3,
+        totalAllocation: 60,
+      },
+      {
+        _id: '2',
+        name: 'Sample Project 2',
+        description: 'Another test project.',
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 86400000 * 60).toISOString(), // 60 days later
+        requiredSkills: ['Node.js', 'Express'],
+        teamSize: 4,
+        status: 'planning',
+        currentTeamSize: 1,
+        totalAllocation: 25,
+      },
+    ];
+    setProjects(sampleData);
+    setLoading(false);
+  }, []);
+
+  // Uncomment and implement your API fetch here when ready
+  /*
   useEffect(() => {
     loadProjects();
   }, []);
@@ -28,6 +73,7 @@ const Projects: React.FC = () => {
       setLoading(false);
     }
   };
+  */
 
   const filteredProjects = projects.filter((project) => {
     const matchesSearch =
@@ -51,7 +97,7 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 bg-gray-50 min-h-screen">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
         <p className="text-gray-600">Manage your engineering projects</p>
@@ -62,12 +108,12 @@ const Projects: React.FC = () => {
         <input
           type="text"
           placeholder="Search projects..."
-          className="input"
+          className="border border-gray-300 rounded px-3 py-2 flex-1"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="input"
+          className="border border-gray-300 rounded px-3 py-2"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -81,6 +127,8 @@ const Projects: React.FC = () => {
       {/* Projects Grid */}
       {loading ? (
         <div>Loading...</div>
+      ) : filteredProjects.length === 0 ? (
+        <div className="text-gray-500">No projects found.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
@@ -109,14 +157,18 @@ const Projects: React.FC = () => {
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-900">Required Skills</h4>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {project.requiredSkills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
-                    >
-                      {skill}
-                    </span>
-                  ))}
+                  {project.requiredSkills && project.requiredSkills.length > 0 ? (
+                    project.requiredSkills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                      >
+                        {skill}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 italic text-xs">No skills listed</span>
+                  )}
                 </div>
               </div>
 
@@ -129,7 +181,7 @@ const Projects: React.FC = () => {
                 </div>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="h-2 rounded-full bg-primary-500"
+                    className="h-2 rounded-full bg-blue-600"
                     style={{
                       width: `${
                         ((project.currentTeamSize || 0) / project.teamSize) * 100
@@ -140,8 +192,12 @@ const Projects: React.FC = () => {
               </div>
 
               <div className="mt-4 flex gap-2">
-                <button className="btn btn-primary flex-1">View Details</button>
-                <button className="btn btn-primary flex-1">Manage Team</button>
+                <button className="bg-blue-600 text-white px-4 py-2 rounded flex-1 hover:bg-blue-700 transition">
+                  View Details
+                </button>
+                <button className="bg-green-600 text-white px-4 py-2 rounded flex-1 hover:bg-green-700 transition">
+                  Manage Team
+                </button>
               </div>
             </div>
           ))}
