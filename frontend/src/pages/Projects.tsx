@@ -1,64 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Project } from '../types';
-import { projectService } from '../api/services';
-
-// Sample project data (mock data)
-const sampleProjects: Project[] = [
-  {
-    _id: 'proj1',
-    name: 'AI Assistant Development',
-    description: 'Build an AI assistant with NLP and ML capabilities.',
-    status: 'active',
-    startDate: '2025-06-01T00:00:00Z',
-    endDate: '2025-09-30T00:00:00Z',
-    requiredSkills: ['Python', 'Machine Learning', 'NLP'],
-    teamSize: 6,
-    currentTeamSize: 4,
-    totalAllocation: 80
-  },
-  {
-    _id: 'proj2',
-    name: 'E-commerce Website',
-    description: 'Develop a scalable e-commerce platform with React and Node.js.',
-    status: 'planning',
-    startDate: '2025-07-15T00:00:00Z',
-    endDate: '2025-12-15T00:00:00Z',
-    requiredSkills: ['React', 'Node.js', 'MongoDB'],
-    teamSize: 8,
-    currentTeamSize: 2,
-    totalAllocation: 25
-  },
-  {
-    _id: 'proj3',
-    name: 'Mobile Banking App',
-    description: 'Create a secure mobile app for online banking.',
-    status: 'active',
-    startDate: '2025-05-01T00:00:00Z',
-    endDate: '2025-08-31T00:00:00Z',
-    requiredSkills: ['React Native', 'TypeScript', 'Firebase'],
-    teamSize: 5,
-    currentTeamSize: 5,
-    totalAllocation: 100
-  },
-  {
-    _id: 'proj4',
-    name: 'Data Analytics Dashboard',
-    description: 'Develop a dashboard for real-time analytics and insights.',
-    status: 'completed',
-    startDate: '2024-11-01T00:00:00Z',
-    endDate: '2025-03-31T00:00:00Z',
-    requiredSkills: ['D3.js', 'Python', 'Data Visualization'],
-    teamSize: 4,
-    currentTeamSize: 4,
-    totalAllocation: 100
-  }
-];
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSkill, setSelectedSkill] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
@@ -67,12 +13,52 @@ const Projects: React.FC = () => {
 
   const loadProjects = async () => {
     try {
-      const response = await projectService.getAllProjects();
-      // Combine fetched projects with sample projects
-      setProjects([...response.data, ...sampleProjects]);
+      // Seed data
+      const projectSeedData: Project[] = [
+        {
+          _id: '1',
+          name: 'Project Alpha',
+          description: 'This is a planning project.',
+          status: 'planning',
+          startDate: '2025-01-01',
+          endDate: '2025-06-01',
+          requiredSkills: ['React', 'Node.js'],
+          teamSize: 5,
+          currentTeamSize: 3,
+          totalAllocation: 60,
+          managerId: 'manager1'
+        },
+        {
+          _id: '2',
+          name: 'Project Beta',
+          description: 'This is an active project.',
+          status: 'active',
+          startDate: '2025-02-01',
+          endDate: '2025-07-01',
+          requiredSkills: ['TypeScript', 'GraphQL'],
+          teamSize: 8,
+          currentTeamSize: 5,
+          totalAllocation: 70,
+          managerId: 'manager2'
+        },
+        {
+          _id: '3',
+          name: 'Project Gamma',
+          description: 'This project is completed.',
+          status: 'completed',
+          startDate: '2024-08-01',
+          endDate: '2025-03-01',
+          requiredSkills: ['Python', 'Django'],
+          teamSize: 4,
+          currentTeamSize: 4,
+          totalAllocation: 100,
+          managerId: 'manager3'
+        }
+      ];
+
+      setProjects(projectSeedData);
     } catch (error) {
       console.error('Failed to load projects:', error);
-      setProjects([...sampleProjects]);
     } finally {
       setLoading(false);
     }
@@ -81,16 +67,10 @@ const Projects: React.FC = () => {
   const filteredProjects = projects.filter(project => {
     const matchesSearch =
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.requiredSkills?.some(skill =>
-        skill.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    const matchesSkill = !selectedSkill || project.requiredSkills?.includes(selectedSkill);
+      project.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = !statusFilter || project.status === statusFilter;
-    return matchesSearch && matchesSkill && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
-
-  const allSkills = Array.from(new Set(projects.flatMap(p => p.requiredSkills || [])));
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -113,26 +93,16 @@ const Projects: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="mb-6 flex flex-wrap gap-4">
+      <div className="mb-6 flex gap-4">
         <input
           type="text"
-          placeholder="Search projects by name, description, or skill..."
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
+          placeholder="Search projects..."
+          className="input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-48"
-          value={selectedSkill}
-          onChange={(e) => setSelectedSkill(e.target.value)}
-        >
-          <option value="">All Skills</option>
-          {allSkills.map(skill => (
-            <option key={skill} value={skill}>{skill}</option>
-          ))}
-        </select>
-        <select
-          className="border border-gray-300 rounded px-3 py-2 w-full md:w-48"
+          className="input"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -146,8 +116,6 @@ const Projects: React.FC = () => {
       {/* Projects Grid */}
       {loading ? (
         <div>Loading...</div>
-      ) : filteredProjects.length === 0 ? (
-        <div className="text-gray-500">No projects found.</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map(project => (
@@ -185,13 +153,13 @@ const Projects: React.FC = () => {
 
               <div className="mt-4">
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>Team Size: {project.currentTeamSize || 0} / {project.teamSize}</span>
-                  <span>Total Allocation: {project.totalAllocation || 0}%</span>
+                  <span>Team Size: {project.currentTeamSize} / {project.teamSize}</span>
+                  <span>Total Allocation: {project.totalAllocation}%</span>
                 </div>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="h-2 rounded-full bg-primary-500"
-                    style={{ width: `${((project.currentTeamSize || 0) / project.teamSize) * 100}%` }}
+                    style={{ width: `${(project.currentTeamSize / project.teamSize) * 100}%` }}
                   />
                 </div>
               </div>
