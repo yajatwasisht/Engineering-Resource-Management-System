@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Project } from '../types';
+import { projectService } from '../api/services';
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -11,67 +12,16 @@ const Projects: React.FC = () => {
     loadProjects();
   }, []);
 
-  // Mock Data (from seed file)
-  const sampleProjects: Project[] = [
-    {
-      _id: '1',
-      name: 'E-commerce Platform Redesign',
-      description: 'Modernize the e-commerce platform with React and TypeScript',
-      startDate: new Date('2024-03-01'),
-      endDate: new Date('2024-08-31'),
-      requiredSkills: ['React', 'TypeScript', 'Node.js'],
-      teamSize: 3,
-      status: 'active',
-      managerId: 'manager1',
-      currentTeamSize: 2,
-      totalAllocation: 60
-    },
-    {
-      _id: '2',
-      name: 'ML Recommendation Engine',
-      description: 'Build an AI-powered product recommendation system',
-      startDate: new Date('2024-04-01'),
-      endDate: new Date('2024-09-30'),
-      requiredSkills: ['Python', 'Machine Learning', 'Data Science'],
-      teamSize: 2,
-      status: 'planning',
-      managerId: 'manager1',
-      currentTeamSize: 1,
-      totalAllocation: 50
-    },
-    {
-      _id: '3',
-      name: 'Mobile App Development',
-      description: 'Develop a cross-platform mobile app using React Native',
-      startDate: new Date('2024-05-01'),
-      endDate: new Date('2024-10-31'),
-      requiredSkills: ['React', 'JavaScript', 'Mobile Development'],
-      teamSize: 2,
-      status: 'active',
-      managerId: 'manager1',
-      currentTeamSize: 2,
-      totalAllocation: 100
-    },
-    {
-      _id: '4',
-      name: 'Cloud Infrastructure Migration',
-      description: 'Migrate on-premise systems to cloud infrastructure',
-      startDate: new Date('2024-06-01'),
-      endDate: new Date('2024-12-31'),
-      requiredSkills: ['DevOps', 'Kubernetes', 'AWS'],
-      teamSize: 2,
-      status: 'planning',
-      managerId: 'manager1',
-      currentTeamSize: 0,
-      totalAllocation: 0
-    }
-  ];
-
   const loadProjects = async () => {
     try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setProjects(sampleProjects);
+      const response = await projectService.getAllProjects();
+      // Convert Date objects to strings for consistency
+      const projects = response.data.map((project: any) => ({
+        ...project,
+        startDate: typeof project.startDate === 'string' ? project.startDate : new Date(project.startDate).toISOString(),
+        endDate: typeof project.endDate === 'string' ? project.endDate : new Date(project.endDate).toISOString()
+      }));
+      setProjects(projects);
     } catch (error) {
       console.error('Failed to load projects:', error);
     } finally {
@@ -112,12 +62,12 @@ const Projects: React.FC = () => {
         <input
           type="text"
           placeholder="Search projects..."
-          className="input border border-gray-300 rounded px-3 py-2"
+          className="input"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select
-          className="input border border-gray-300 rounded px-3 py-2"
+          className="input"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -181,10 +131,9 @@ const Projects: React.FC = () => {
                   <div
                     className="h-2 rounded-full bg-primary-500"
                     style={{
-                      width: `${(
-                        ((project.currentTeamSize || 0) / project.teamSize) *
-                        100
-                      ).toFixed(2)}%`
+                      width: `${
+                        ((project.currentTeamSize || 0) / project.teamSize) * 100
+                      }%`
                     }}
                   />
                 </div>
