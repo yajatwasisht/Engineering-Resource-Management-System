@@ -81,6 +81,7 @@ export const dashboardService = {
   
   getUpcomingAssignments: () =>
     client.get('/dashboard/upcoming-assignments'),
+  };
   
 // Analytics Services
 export const analyticsService = {
