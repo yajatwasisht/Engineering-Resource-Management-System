@@ -71,18 +71,17 @@ export const assignmentService = {
 // Dashboard Services
 export const dashboardService = {
   getManagerDashboard: () =>
-    client.get('/dashboard/manager'),
+    client.get<DashboardStats>('/dashboard/manager'),
   
   getEngineerDashboard: () =>
-    client.get('/dashboard/engineer'),
+    client.get<EngineerStats>('/dashboard/engineer'),
   
   getTeamUtilization: () =>
     client.get('/dashboard/utilization'),
   
   getUpcomingAssignments: () =>
     client.get('/dashboard/upcoming-assignments'),
-};
-
+  
 // Analytics Services
 export const analyticsService = {
   getSkillsDistribution: () =>
