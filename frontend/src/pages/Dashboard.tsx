@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth';
 import { DashboardStats, EngineerStats } from '../types';
 
-const Modal: React.FC<{ title: string; isOpen: boolean; onClose: () => void }> = ({
-  title,
-  isOpen,
-  onClose,
-  children,
-}) => {
+interface ModalProps {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ title, isOpen, onClose, children }) => {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
@@ -146,7 +148,6 @@ const ManagerDashboard: React.FC<{ stats: DashboardStats }> = ({ stats }) => {
 };
 
 const EngineerDashboard: React.FC<{ stats: EngineerStats }> = ({ stats }) => {
-  // No changes here, keep as is.
   return (
     <div className="space-y-6">
       {/* Personal Stats */}
@@ -193,12 +194,14 @@ const EngineerDashboard: React.FC<{ stats: EngineerStats }> = ({ stats }) => {
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+
   const [managerStats, setManagerStats] = useState<DashboardStats>({
     totalProjects: 0,
     activeProjects: 0,
     totalEngineers: 0,
     averageUtilization: 0,
   });
+
   const [engineerStats, setEngineerStats] = useState<EngineerStats>({
     currentProjects: 0,
     currentAllocation: 0,
