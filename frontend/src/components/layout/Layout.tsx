@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: 'Dashboard', path: '/dashboard' },
     { name: 'Engineers', path: '/manager/engineers' },
     { name: 'Projects', path: '/manager/projects' },
-    { name: 'Assignments', path: '/assignments' },
+    { name: 'Assignments', path: '/manager/assignments' },
   ];
 
   return (
