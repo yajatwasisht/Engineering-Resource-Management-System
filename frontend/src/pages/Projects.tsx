@@ -1,17 +1,45 @@
 import React, { useEffect, useState } from 'react';
+import { Project } from '../types';
+// import { projectService } from '../api/services'; // Uncomment when you add real API calls
 
-export interface Project {
-  _id: string;
-  name: string;
-  description: string;
-  startDate: string; // ISO string
-  endDate: string; // ISO string
-  requiredSkills: string[];
-  teamSize: number;
-  status: 'planning' | 'active' | 'completed' | string;
-  currentTeamSize?: number;
-  totalAllocation?: number;
-}
+const sampleProjects: Project[] = [
+  {
+    _id: 'proj1',
+    name: 'Customer Portal Revamp',
+    description: 'Redesigning and improving the user experience of the customer portal.',
+    startDate: '2025-01-15T00:00:00Z',
+    endDate: '2025-06-15T00:00:00Z',
+    requiredSkills: ['React', 'TypeScript', 'UI/UX'],
+    teamSize: 6,
+    status: 'active',
+    currentTeamSize: 4,
+    totalAllocation: 75
+  },
+  {
+    _id: 'proj2',
+    name: 'Data Warehouse Migration',
+    description: 'Migrating the existing data warehouse to a new cloud platform.',
+    startDate: '2025-02-01T00:00:00Z',
+    endDate: '2025-05-01T00:00:00Z',
+    requiredSkills: ['SQL', 'ETL', 'Cloud'],
+    teamSize: 5,
+    status: 'planning',
+    currentTeamSize: 2,
+    totalAllocation: 40
+  },
+  {
+    _id: 'proj3',
+    name: 'Mobile App Launch',
+    description: 'Building and launching the new mobile app for Android and iOS.',
+    startDate: '2024-12-01T00:00:00Z',
+    endDate: '2025-03-31T00:00:00Z',
+    requiredSkills: ['React Native', 'iOS', 'Android'],
+    teamSize: 7,
+    status: 'completed',
+    currentTeamSize: 7,
+    totalAllocation: 100
+  }
+];
 
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -19,71 +47,37 @@ const Projects: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  // Sample data to test UI rendering
   useEffect(() => {
-    const sampleData: Project[] = [
-      {
-        _id: '1',
-        name: 'Sample Project 1',
-        description: 'This is a sample project for testing.',
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 86400000 * 30).toISOString(), // 30 days later
-        requiredSkills: ['React', 'TypeScript'],
-        teamSize: 5,
-        status: 'active',
-        currentTeamSize: 3,
-        totalAllocation: 60,
-      },
-      {
-        _id: '2',
-        name: 'Sample Project 2',
-        description: 'Another test project.',
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 86400000 * 60).toISOString(), // 60 days later
-        requiredSkills: ['Node.js', 'Express'],
-        teamSize: 4,
-        status: 'planning',
-        currentTeamSize: 1,
-        totalAllocation: 25,
-      },
-    ];
-    setProjects(sampleData);
+    // Uncomment this and implement projectService.getAllProjects() for real API
+    // const loadProjects = async () => {
+    //   try {
+    //     const response = await projectService.getAllProjects();
+    //     setProjects(response.data);
+    //   } catch (error) {
+    //     console.error('Failed to load projects:', error);
+    //     setProjects(sampleProjects);
+    //   } finally {
+    //     setLoading(false);
+    //   }
+    // };
+    // loadProjects();
+
+    // For now, just load sample projects
+    setProjects(sampleProjects);
     setLoading(false);
   }, []);
 
-  // Uncomment and implement your API fetch here when ready
-  /*
-  useEffect(() => {
-    loadProjects();
-  }, []);
-
-  const loadProjects = async () => {
-    try {
-      const response = await projectService.getAllProjects();
-      // Convert Date objects to strings for consistency
-      const projects = response.data.map((project: any) => ({
-        ...project,
-        startDate: typeof project.startDate === 'string' ? project.startDate : new Date(project.startDate).toISOString(),
-        endDate: typeof project.endDate === 'string' ? project.endDate : new Date(project.endDate).toISOString()
-      }));
-      setProjects(projects);
-    } catch (error) {
-      console.error('Failed to load projects:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  */
-
-  const filteredProjects = projects.filter((project) => {
+  const filteredProjects = projects.filter(proj => {
+    const searchLower = searchTerm.toLowerCase();
     const matchesSearch =
-      project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      project.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = !statusFilter || project.status === statusFilter;
+      proj.name.toLowerCase().includes(searchLower) ||
+      proj.description.toLowerCase().includes(searchLower) ||
+      proj.requiredSkills.some(skill => skill.toLowerCase().includes(searchLower));
+    const matchesStatus = !statusFilter || proj.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadgeClasses = (status: string) => {
     switch (status) {
       case 'planning':
         return 'bg-yellow-100 text-yellow-800';
@@ -96,24 +90,31 @@ const Projects: React.FC = () => {
     }
   };
 
+  const getProgressBarColor = (allocation?: number) => {
+    if (!allocation) return 'bg-gray-300';
+    if (allocation >= 100) return 'bg-red-600';
+    if (allocation >= 75) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Projects</h1>
         <p className="text-gray-600">Manage your engineering projects</p>
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex gap-4">
+      <div className="mb-6 flex flex-wrap gap-4">
         <input
           type="text"
-          placeholder="Search projects..."
-          className="border border-gray-300 rounded px-3 py-2 flex-1"
+          placeholder="Search projects by name, description, or skill..."
+          className="border border-gray-300 rounded px-3 py-2 w-full md:w-64"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+
         <select
-          className="border border-gray-300 rounded px-3 py-2"
+          className="border border-gray-300 rounded px-3 py-2 w-full md:w-48"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
         >
@@ -124,7 +125,6 @@ const Projects: React.FC = () => {
         </select>
       </div>
 
-      {/* Projects Grid */}
       {loading ? (
         <div>Loading...</div>
       ) : filteredProjects.length === 0 ? (
@@ -136,10 +136,10 @@ const Projects: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
-                  <p className="text-gray-600 line-clamp-2">{project.description}</p>
+                  <p className="text-gray-600 line-clamp-3">{project.description}</p>
                 </div>
                 <span
-                  className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusColor(
+                  className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusBadgeClasses(
                     project.status
                   )}`}
                 >
@@ -147,57 +147,37 @@ const Projects: React.FC = () => {
                 </span>
               </div>
 
-              <div className="mt-4">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>Start: {new Date(project.startDate).toLocaleDateString()}</span>
-                  <span>End: {new Date(project.endDate).toLocaleDateString()}</span>
-                </div>
+              <div className="mt-4 text-sm text-gray-600 flex justify-between">
+                <span>Start: {new Date(project.startDate).toLocaleDateString()}</span>
+                <span>End: {new Date(project.endDate).toLocaleDateString()}</span>
               </div>
 
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-900">Required Skills</h4>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {project.requiredSkills && project.requiredSkills.length > 0 ? (
-                    project.requiredSkills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-                      >
-                        {skill}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-gray-400 italic text-xs">No skills listed</span>
-                  )}
+                  {project.requiredSkills.map(skill => (
+                    <span
+                      key={skill}
+                      className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
               </div>
 
               <div className="mt-4">
-                <div className="flex justify-between text-sm text-gray-600">
-                  <span>
-                    Team Size: {project.currentTeamSize || 0} / {project.teamSize}
-                  </span>
-                  <span>Total Allocation: {project.totalAllocation || 0}%</span>
-                </div>
-                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="h-2 rounded-full bg-blue-600"
+                    className={`${getProgressBarColor(project.totalAllocation)} h-2 rounded-full`}
                     style={{
-                      width: `${
-                        ((project.currentTeamSize || 0) / project.teamSize) * 100
-                      }%`
+                      width: `${Math.min(project.totalAllocation || 0, 100)}%`
                     }}
                   />
                 </div>
-              </div>
-
-              <div className="mt-4 flex gap-2">
-                <button className="bg-blue-600 text-white px-4 py-2 rounded flex-1 hover:bg-blue-700 transition">
-                  View Details
-                </button>
-                <button className="bg-green-600 text-white px-4 py-2 rounded flex-1 hover:bg-green-700 transition">
-                  Manage Team
-                </button>
+                <p className="mt-1 text-sm text-gray-600">
+                  Team: {project.currentTeamSize || 0} / {project.teamSize} members • Allocation: {project.totalAllocation || 0}%
+                </p>
               </div>
             </div>
           ))}
