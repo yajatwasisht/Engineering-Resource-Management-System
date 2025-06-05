@@ -68,6 +68,39 @@ const EngineerDashboard: React.FC = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Welcome, {engineer.name}!</h1>
 
+      {/* Summary Boxes */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+        {/* Current Projects */}
+        <div className="bg-white p-4 rounded shadow text-center">
+          <h2 className="text-lg font-semibold">Current Projects</h2>
+          <p className="text-2xl mt-2">{engineer.projects.length}</p>
+        </div>
+
+        {/* Current Allocation */}
+        <div className="bg-white p-4 rounded shadow text-center">
+          <h2 className="text-lg font-semibold">Current Allocation</h2>
+          <p className="text-2xl mt-2">{engineer.currentAllocation}%</p>
+        </div>
+
+        {/* Upcoming Assignments */}
+        <div className="bg-white p-4 rounded shadow text-center">
+          <h2 className="text-lg font-semibold">Upcoming Assignments</h2>
+          <p className="text-2xl mt-2">
+            {
+              engineer.projects.filter(
+                (p) => new Date(p.startDate) > new Date()
+              ).length
+            }
+          </p>
+        </div>
+
+        {/* My Skills */}
+        <div className="bg-white p-4 rounded shadow text-center">
+          <h2 className="text-lg font-semibold">My Skills</h2>
+          <p className="text-2xl mt-2">{engineer.skills.length}</p>
+        </div>
+      </div>
+
       {/* Capacity Overview */}
       <Card className="mb-6">
         <CardHeader>
@@ -144,4 +177,4 @@ const EngineerDashboard: React.FC = () => {
   );
 };
 
-export default EngineerDashboard; 
+export default EngineerDashboard;
