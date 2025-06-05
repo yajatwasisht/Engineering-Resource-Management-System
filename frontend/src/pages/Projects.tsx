@@ -1,6 +1,49 @@
 import React, { useEffect, useState } from 'react';
 import { Project } from '../types';
 
+// Sample projects seed data
+const sampleProjects: Project[] = [
+  {
+    _id: '1',
+    name: 'Engineering Dashboard',
+    description: 'A dashboard for managing engineering teams and their projects.',
+    status: 'active',
+    startDate: '2025-01-10',
+    endDate: '2025-12-20',
+    requiredSkills: ['React', 'Node.js', 'TypeScript'],
+    teamSize: 10,
+    currentTeamSize: 7,
+    totalAllocation: 70,
+    managerId: 'manager1',
+  },
+  {
+    _id: '2',
+    name: 'DevOps Migration',
+    description: 'Migrating our infrastructure to a container-based architecture.',
+    status: 'planning',
+    startDate: '2025-07-01',
+    endDate: '2026-01-31',
+    requiredSkills: ['Docker', 'Kubernetes', 'CI/CD'],
+    teamSize: 5,
+    currentTeamSize: 2,
+    totalAllocation: 40,
+    managerId: 'manager2',
+  },
+  {
+    _id: '3',
+    name: 'Mobile App Redesign',
+    description: 'Revamp the user interface and experience of our mobile app.',
+    status: 'completed',
+    startDate: '2024-05-15',
+    endDate: '2024-12-31',
+    requiredSkills: ['React Native', 'UI/UX Design'],
+    teamSize: 6,
+    currentTeamSize: 6,
+    totalAllocation: 100,
+    managerId: 'manager3',
+  },
+];
+
 const Projects: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -13,58 +56,18 @@ const Projects: React.FC = () => {
 
   const loadProjects = async () => {
     try {
-      // Seed data
-      const projectSeedData: Project[] = [
-        {
-          _id: '1',
-          name: 'Project Alpha',
-          description: 'This is a planning project.',
-          status: 'planning',
-          startDate: '2025-01-01',
-          endDate: '2025-06-01',
-          requiredSkills: ['React', 'Node.js'],
-          teamSize: 5,
-          currentTeamSize: 3,
-          totalAllocation: 60,
-          managerId: 'manager1'
-        },
-        {
-          _id: '2',
-          name: 'Project Beta',
-          description: 'This is an active project.',
-          status: 'active',
-          startDate: '2025-02-01',
-          endDate: '2025-07-01',
-          requiredSkills: ['TypeScript', 'GraphQL'],
-          teamSize: 8,
-          currentTeamSize: 5,
-          totalAllocation: 70,
-          managerId: 'manager2'
-        },
-        {
-          _id: '3',
-          name: 'Project Gamma',
-          description: 'This project is completed.',
-          status: 'completed',
-          startDate: '2024-08-01',
-          endDate: '2025-03-01',
-          requiredSkills: ['Python', 'Django'],
-          teamSize: 4,
-          currentTeamSize: 4,
-          totalAllocation: 100,
-          managerId: 'manager3'
-        }
-      ];
-
-      setProjects(projectSeedData);
+      // Simulate API call with setTimeout
+      setTimeout(() => {
+        setProjects(sampleProjects);
+        setLoading(false);
+      }, 500);
     } catch (error) {
       console.error('Failed to load projects:', error);
-    } finally {
       setLoading(false);
     }
   };
 
-  const filteredProjects = projects.filter(project => {
+  const filteredProjects = projects.filter((project) => {
     const matchesSearch =
       project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       project.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -118,29 +121,43 @@ const Projects: React.FC = () => {
         <div>Loading...</div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProjects.map(project => (
+          {filteredProjects.map((project) => (
             <div key={project._id} className="bg-white rounded-xl shadow-lg p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{project.name}</h3>
-                  <p className="text-gray-600 line-clamp-2">{project.description}</p>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {project.name}
+                  </h3>
+                  <p className="text-gray-600 line-clamp-2">
+                    {project.description}
+                  </p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusColor(project.status)}`}>
+                <span
+                  className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusColor(
+                    project.status
+                  )}`}
+                >
                   {project.status}
                 </span>
               </div>
 
               <div className="mt-4">
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>Start: {new Date(project.startDate).toLocaleDateString()}</span>
-                  <span>End: {new Date(project.endDate).toLocaleDateString()}</span>
+                  <span>
+                    Start: {new Date(project.startDate).toLocaleDateString()}
+                  </span>
+                  <span>
+                    End: {new Date(project.endDate).toLocaleDateString()}
+                  </span>
                 </div>
               </div>
 
               <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-900">Required Skills</h4>
+                <h4 className="text-sm font-medium text-gray-900">
+                  Required Skills
+                </h4>
                 <div className="mt-2 flex flex-wrap gap-2">
-                  {project.requiredSkills.map(skill => (
+                  {project.requiredSkills.map((skill) => (
                     <span
                       key={skill}
                       className="px-2 py-1 bg-primary-100 text-primary-800 rounded-full text-xs"
@@ -153,13 +170,22 @@ const Projects: React.FC = () => {
 
               <div className="mt-4">
                 <div className="flex justify-between text-sm text-gray-600">
-                  <span>Team Size: {project.currentTeamSize} / {project.teamSize}</span>
-                  <span>Total Allocation: {project.totalAllocation}%</span>
+                  <span>
+                    Team Size: {project.currentTeamSize ?? 0} /{' '}
+                    {project.teamSize}
+                  </span>
+                  <span>
+                    Total Allocation: {project.totalAllocation ?? 0}%
+                  </span>
                 </div>
                 <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                   <div
                     className="h-2 rounded-full bg-primary-500"
-                    style={{ width: `${(project.currentTeamSize / project.teamSize) * 100}%` }}
+                    style={{
+                      width: `${((project.currentTeamSize ?? 0) /
+                        project.teamSize) *
+                        100}%`,
+                    }}
                   />
                 </div>
               </div>
