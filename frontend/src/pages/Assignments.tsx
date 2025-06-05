@@ -1,153 +1,166 @@
-import React, { useEffect, useState } from 'react';
-import { Assignment, User, Project } from '../types';
-import { assignmentService, userService, projectService } from '../api/services';
-import { useAuthStore } from '../store/auth';
+import React, { useState } from 'react';
+
+type User = {
+  _id: string;
+  name: string;
+  role: 'engineer' | 'manager' | string;
+  email: string;
+  employmentType: string;
+  maxCapacity: number;
+};
+
+type Project = {
+  _id: string;
+  name: string;
+  description?: string;
+};
+
+type Assignment = {
+  _id: string;
+  engineerId: string;
+  projectId: string;
+  startDate: string;
+  endDate: string;
+  role: string;
+  allocationPercentage: number;
+  status: 'pending' | 'active' | 'completed';
+};
 
 const Assignments: React.FC = () => {
-  const { user } = useAuthStore();
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  const [engineers, setEngineers] = useState<User[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedEngineer, setSelectedEngineer] = useState('');
-  const [selectedProject, setSelectedProject] = useState('');
+  // Sample data - hardcoded inside component
+  const engineers: User[] = [
+    {
+      _id: '1',
+      name: 'Sarah',
+      role: 'engineer',
+      email: 'sarah@example.com',
+      employmentType: 'full-time',
+      maxCapacity: 100,
+    },
+    {
+      _id: '2',
+      name: 'Mike',
+      role: 'engineer',
+      email: 'mike@example.com',
+      employmentType: 'full-time',
+      maxCapacity: 100,
+    },
+    {
+      _id: '3',
+      name: 'Alex',
+      role: 'engineer',
+      email: 'alex@example.com',
+      employmentType: 'contract',
+      maxCapacity: 80,
+    },
+    {
+      _id: '4',
+      name: 'Lisa',
+      role: 'engineer',
+      email: 'lisa@example.com',
+      employmentType: 'part-time',
+      maxCapacity: 60,
+    },
+  ];
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const projects: Project[] = [
+    { _id: 'p1', name: 'E-commerce Platform' },
+    { _id: 'p2', name: 'Machine Learning Engine' },
+    { _id: 'p3', name: 'Mobile App Revamp' },
+    { _id: 'p4', name: 'Cloud Migration' },
+  ];
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [assignmentsRes, engineersRes, projectsRes] = await Promise.all([
-        assignmentService.getAllAssignments(),
-        userService.getAllEngineers(),
-        projectService.getAllProjects(),
-      ]);
+  const assignments: Assignment[] = [
+    {
+      _id: 'a1',
+      engineerId: '1',
+      projectId: 'p1',
+      startDate: '2024-01-01',
+      endDate: '2024-06-30',
+      role: 'Tech Lead',
+      allocationPercentage: 50,
+      status: 'active',
+    },
+    {
+      _id: 'a2',
+      engineerId: '2',
+      projectId: 'p2',
+      startDate: '2024-02-01',
+      endDate: '2024-08-31',
+      role: 'ML Engineer',
+      allocationPercentage: 60,
+      status: 'pending',
+    },
+    {
+      _id: 'a3',
+      engineerId: '3',
+      projectId: 'p4',
+      startDate: '2024-01-15',
+      endDate: '2024-05-30',
+      role: 'DevOps Lead',
+      allocationPercentage: 70,
+      status: 'active',
+    },
+    {
+      _id: 'a4',
+      engineerId: '1',
+      projectId: 'p4',
+      startDate: '2024-01-15',
+      endDate: '2024-05-30',
+      role: 'Backend Developer',
+      allocationPercentage: 30,
+      status: 'completed',
+    },
+    {
+      _id: 'a5',
+      engineerId: '4',
+      projectId: 'p1',
+      startDate: '2024-01-01',
+      endDate: '2024-06-30',
+      role: 'Frontend Developer',
+      allocationPercentage: 40,
+      status: 'active',
+    },
+  ];
 
-      setAssignments(assignmentsRes.data);
-      setEngineers(engineersRes.data);
-      setProjects(projectsRes.data);
-    } catch (error) {
-      console.error('Failed to load data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Helpers to get names by IDs
+  const getEngineerName = (id: string) => engineers.find(e => e._id === id)?.name || 'Unknown';
+  const getProjectName = (id: string) => projects.find(p => p._id === id)?.name || 'Unknown';
 
-  const filteredAssignments = assignments.filter(assignment => {
-    const matchesEngineer = !selectedEngineer || assignment.engineerId === selectedEngineer;
-    const matchesProject = !selectedProject || assignment.projectId === selectedProject;
-    return matchesEngineer && matchesProject;
-  });
-
-  const getEngineerName = (engineerId: string) => {
-    const engineer = engineers.find(e => e._id === engineerId);
-    return engineer?.name || 'Unknown Engineer';
-  };
-
-  const getProjectName = (projectId: string) => {
-    const project = projects.find(p => p._id === projectId);
-    return project?.name || 'Unknown Project';
-  };
-
+  // Status color helper
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'completed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'completed': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Assignments</h1>
-        <p className="text-gray-600">Manage engineer assignments to projects</p>
-      </div>
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Assignments</h1>
 
-      {/* Filters */}
-      <div className="mb-6 flex gap-4">
-        <select
-          className="input"
-          value={selectedEngineer}
-          onChange={(e) => setSelectedEngineer(e.target.value)}
-        >
-          <option value="">All Engineers</option>
-          {engineers.map(engineer => (
-            <option key={engineer._id} value={engineer._id}>{engineer.name}</option>
-          ))}
-        </select>
-
-        <select
-          className="input"
-          value={selectedProject}
-          onChange={(e) => setSelectedProject(e.target.value)}
-        >
-          <option value="">All Projects</option>
-          {projects.map(project => (
-            <option key={project._id} value={project._id}>{project.name}</option>
-          ))}
-        </select>
-
-        {user?.role === 'manager' && (
-          <button className="btn btn-primary">New Assignment</button>
-        )}
-      </div>
-
-      {/* Assignments List */}
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredAssignments.map(assignment => (
-            <div key={assignment._id} className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {getEngineerName(assignment.engineerId)}
-                  </h3>
-                  <p className="text-gray-600">{getProjectName(assignment.projectId)}</p>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-sm capitalize ${getStatusColor(assignment.status)}`}>
-                  {assignment.status}
-                </span>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Role</p>
-                  <p className="font-medium">{assignment.role}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Allocation</p>
-                  <p className="font-medium">{assignment.allocationPercentage}%</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Start Date</p>
-                  <p className="font-medium">{new Date(assignment.startDate).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">End Date</p>
-                  <p className="font-medium">{new Date(assignment.endDate).toLocaleDateString()}</p>
-                </div>
-              </div>
-
-              {user?.role === 'manager' && (
-                <div className="mt-4 flex gap-2">
-                  <button className="btn btn-primary flex-1">Edit</button>
-                  <button className="btn btn-danger flex-1">Remove</button>
-                </div>
-              )}
+      <div className="space-y-6">
+        {assignments.map(assignment => (
+          <div key={assignment._id} className="border rounded-lg p-5 shadow-md bg-white">
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-xl font-semibold">
+                {getEngineerName(assignment.engineerId)}
+              </h2>
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-semibold capitalize ${getStatusColor(assignment.status)}`}
+              >
+                {assignment.status}
+              </span>
             </div>
-          ))}
-        </div>
-      )}
+            <p className="text-gray-600 mb-1"><strong>Project:</strong> {getProjectName(assignment.projectId)}</p>
+            <p className="text-gray-600 mb-1"><strong>Role:</strong> {assignment.role}</p>
+            <p className="text-gray-600 mb-1"><strong>Allocation:</strong> {assignment.allocationPercentage}%</p>
+            <p className="text-gray-600"><strong>Duration:</strong> {new Date(assignment.startDate).toLocaleDateString()} - {new Date(assignment.endDate).toLocaleDateString()}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
